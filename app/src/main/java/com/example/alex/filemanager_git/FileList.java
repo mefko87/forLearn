@@ -14,6 +14,7 @@ public class FileList {
 		this.mExtension = mExtension;
 		this.mSize = mSize;
 		this.mCreateDate = mCreateDate;
+
 	}
 
 	public String getmName() {
