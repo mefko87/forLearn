@@ -3,13 +3,13 @@ package com.example.alex.filemanager_git;
 
 import java.util.Date;
 
-public class FileList {
+public class FileListModel {
 	private String mName;
 	private String mExtension;
 	private int mSize;
 	private Date mCreateDate;
 
-	public FileList(String mName, String mExtension, int mSize, Date mCreateDate) {
+	public FileListModel(String mName, String mExtension, int mSize, Date mCreateDate) {
 		this.mName = mName;
 		this.mExtension = mExtension;
 		this.mSize = mSize;

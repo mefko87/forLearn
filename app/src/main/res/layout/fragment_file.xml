@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark">
+
+        <Button
+            android:text="Parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/parentPath"
+            />
+
+        <Button
+            android:text="Add Folder"
+            android:layout_height="wrap_content"
+            android:id="@+id/addFolder"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"/>
+
+        <Button
+            android:text="Current"
+            android:layout_height="wrap_content"
+            android:id="@+id/currentPath"
+            android:layout_width="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/parentPath"
+            />
+    </RelativeLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lview"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="55dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:elevation="0dp"
+            android:background="@color/colorPrimary"
+            android:layout_height="wrap_content"
+            >
+
+            <Button
+                android:text="copy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/copy"
+                android:layout_alignParentBottom="true"
+                android:layout_toEndOf="@+id/move"
+                android:textSize="18sp"/>
+
+            <Button
+                android:text="move"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/move"
+                android:layout_alignParentBottom="true"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
