@@ -57,18 +57,24 @@
                 android:text="copy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/copy"
+                android:id="@+id/copyBtn"
                 android:layout_alignParentBottom="true"
-                android:layout_toEndOf="@+id/move"
                 android:textSize="18sp"/>
 
-            <Button
-                android:text="move"
+            <TextView
+                android:text="TextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/move"
                 android:layout_alignParentBottom="true"
-                android:textSize="18sp"/>
+                android:layout_toEndOf="@+id/moveBtn"
+                android:layout_marginStart="33dp"
+                android:layout_marginBottom="9dp"
+                android:id="@+id/textAdvise"
+                android:visibility="gone"
+                android:textSize="18sp"
+                android:textColor="@color/white_opaque"
+                android:textAlignment="center"/>
+
         </RelativeLayout>
     </LinearLayout>
 

@@ -1,6 +1,7 @@
 <resources>
     <color name="white_opaque">#ffffff</color>
     <color name="light_green">#D8F6CE</color>
+    <color name="selected_item">#BDBDBD</color>
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">

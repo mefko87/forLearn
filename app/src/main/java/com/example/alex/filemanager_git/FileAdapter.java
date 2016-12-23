@@ -2,7 +2,7 @@ package com.example.alex.filemanager_git;
 
 
 import android.app.Activity;
-import android.support.v4.app.FragmentActivity;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +69,12 @@ public class FileAdapter extends BaseAdapter {
 		}
 
 		File item = fileList.get(position);
+		convertView.setBackgroundColor(Color.WHITE);
+		if (FileViewFragment.getmActionFileList() != null) {
+			if (FileViewFragment.getmActionFileList().contains(item)) {
+				convertView.setBackgroundColor(Color.LTGRAY);
+			}
+		}
 		if (item.isDirectory()) {
 			holder.mName.setText(item.getName());
 			holder.mSize.setText("DIR");

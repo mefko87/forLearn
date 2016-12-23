@@ -1,9 +1,5 @@
 package com.example.alex.filemanager_git;
 
-import android.widget.ListView;
-
-import com.example.alex.filemanager_git.FileListModel;
-
 import java.io.File;
 import java.util.ArrayList;
 
@@ -31,6 +27,7 @@ public class FileViewer {
 			}
 		}
 	}
+
 
 	public ArrayList<File> getmFList() {
 		return mFList;

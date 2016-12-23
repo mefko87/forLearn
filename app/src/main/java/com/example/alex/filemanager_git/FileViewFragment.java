@@ -1,14 +1,10 @@
 package com.example.alex.filemanager_git;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,21 +13,23 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
 
 
 public class FileViewFragment extends Fragment {
 
 
+	private static ArrayList<File> mActionFileList = new ArrayList<File>();
 	private FileAdapter fileAdapter;
 	private FileViewer fileViewer;
 	private File currentDirNew;
 	private String newFolderName;
 	private File newFile;
+	AsyncTaskCopy asyncTaskCopy;
 
 
 	public static FileViewFragment newInstance(int page, String title) {
@@ -52,16 +50,68 @@ public class FileViewFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-
-		final File startDir = new File(String.valueOf(Environment.getRootDirectory()));
-
 		View view = inflater.inflate(R.layout.fragment_file, container, false);
 
-		ListView lview = (ListView) view.findViewById(R.id.lview);
+
+		final String rootPath = "/storage";
+		final File startDir = new File(String.valueOf(Environment.getExternalStorageDirectory()));
+
+		asyncTaskCopy = new AsyncTaskCopy(this.getContext());
+
+		final ListView lview = (ListView) view.findViewById(R.id.lview);
 		final Button curentDirectory = (Button) view.findViewById(R.id.currentPath);
 		final Button parentDirectory = (Button) view.findViewById(R.id.parentPath);
-		Button addDirectory = (Button) view.findViewById(R.id.addFolder);
+		final Button addDirectory = (Button) view.findViewById(R.id.addFolder);
+		final Button copyBtn = (Button) view.findViewById(R.id.copyBtn);
+		final Button moveBtn = (Button) view.findViewById(R.id.moveBtn);
+		final TextView textAdvise = (TextView) view.findViewById(R.id.textAdvise);
 
+		getmActionFileList().clear();
+
+
+		//Реалізація копіювання і виділення елементів для копіювання
+		//
+		copyBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (getmActionFileList().isEmpty()) {
+					copyBtn.setVisibility(View.GONE);
+
+					textAdvise.setVisibility(View.VISIBLE);
+					textAdvise.setText("Select Files or Directories ang tap 'Copy' on another screen");
+
+
+					lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+						@Override
+						public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+							File item = (File) fileAdapter.getItem(position);
+							if (getmActionFileList().contains(item)) {
+								getmActionFileList().remove(item);
+								fileAdapter.notifyDataSetChanged();
+							} else {
+								getmActionFileList().add(item);
+								fileAdapter.notifyDataSetChanged();
+							}
+
+						}
+					});
+				} else {
+					getmActionFileList().add(currentDirNew);
+
+					asyncTaskCopy.execute(getmActionFileList());
+					copyBtn.setVisibility(View.VISIBLE);
+
+					textAdvise.setVisibility(View.GONE);
+
+
+				}
+			}
+		});
+		// END // pеалізація копіювання і виділення елементів для копіювання
+
+
+		//Баттон створення директорії
+		//
 		addDirectory.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -82,6 +132,7 @@ public class FileViewFragment extends Fragment {
 						newFile = new File(currentDirNew + "/" + newFolderName);
 						newFile.mkdirs();
 						fileAdapter.notifyDataSetChanged();
+						fileViewer.fileItemGet(currentDirNew);
 					}
 				});
 				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -92,10 +143,10 @@ public class FileViewFragment extends Fragment {
 				});
 
 				builder.show();
-				currentDirNew.mkdir();
+				fileAdapter.notifyDataSetChanged();
 			}
 		});
-
+		// END // Баттон створення директорії
 
 		fileViewer = new FileViewer();
 		fileAdapter = new FileAdapter(fileViewer.getmFList(), getActivity());
@@ -105,9 +156,33 @@ public class FileViewFragment extends Fragment {
 		}
 		lview.setAdapter(fileAdapter);
 		fileAdapter.notifyDataSetChanged();
-		parentDirectory.setVisibility(View.GONE);
+		parentDirectory.setText(startDir.getParentFile().getName());
 		curentDirectory.setText(startDir.getName());
 
+		// 	Кнопка навігації назад
+		//
+		parentDirectory.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+
+				File parentDir = new File(currentDirNew.getParent());
+				fileViewer.fileItemGet(parentDir);
+				fileAdapter.notifyDataSetChanged();
+				currentDirNew = parentDir;
+				if (parentDir.getPath().equals(rootPath)) {
+					curentDirectory.setText(currentDirNew.getName());
+					parentDirectory.setVisibility(View.GONE);
+				} else {
+					curentDirectory.setText(parentDir.getName());
+					parentDirectory.setText(parentDir.getParentFile().getName());
+				}
+
+			}
+		});
+		//END // 	Кнопка навігації назад
+
+		//Реалізація перегляду файлової системи
+		//
 		lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long l) {
@@ -130,28 +205,6 @@ public class FileViewFragment extends Fragment {
 						parentDirectory.setText(currentDirNew.getParentFile().getName());
 						curentDirectory.setText(currentDirNew.getName());
 
-						// Кнопка навігації
-
-						parentDirectory.setOnClickListener(new View.OnClickListener() {
-							@Override
-							public void onClick(View view) {
-								File parentDir = new File(currentDirNew.getParent());
-								fileViewer.fileItemGet(parentDir);
-								fileAdapter.notifyDataSetChanged();
-								currentDirNew = parentDir;
-								if (parentDir.equals(startDir)) {
-									parentDirectory.setText(startDir.getName());
-									curentDirectory.setVisibility(View.GONE);
-								} else {
-									curentDirectory.setText(parentDir.getName());
-									parentDirectory.setText(parentDir.getParentFile().getName());
-								}
-
-							}
-						});
-
-						//
-
 
 					}
 				} else {
@@ -163,7 +216,15 @@ public class FileViewFragment extends Fragment {
 
 			}
 		});
+		//END // Реалізація перегляду файлової системи
+
 		return view;
 	}
+
+
+	public static ArrayList<File> getmActionFileList() {
+		return mActionFileList;
+	}
+
 
 }
