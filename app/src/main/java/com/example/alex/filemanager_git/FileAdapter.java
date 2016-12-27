@@ -19,8 +19,8 @@ import java.util.Date;
 public class FileAdapter extends BaseAdapter {
 	private ArrayList<File> fileList;
 	private Activity activity;
-	final String LOG_TAG = "myLogs";
-	ViewHolder holder;
+	private final String LOG_TAG = "myLogs";
+	private ViewHolder holder;
 
 	public FileAdapter(ArrayList<File> fileList, Activity activity) {
 		this.fileList = fileList;

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">FileManager_git</string>
+    <string name="toast_on_file">It`s a file</string>
+    <string name="text_advise">Select Files or Directories ang tap 'Copy' on another screen</string>
+    <string name="add_folder__dialog_title">Folder name</string>
+    <string name="add_folder__dialog_ok">OK</string>
+    <string name="add_folder__dialog_cancel">Cancel</string>
 </resources>

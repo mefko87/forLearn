@@ -14,15 +14,16 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		PagerAdapter pagerAdapter;
-		leftFragment = new FileViewFragment();
-		rightFragment = new FileViewFragment();
+
 
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+
 			ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
 			pagerAdapter = new PagerAdapter(getSupportFragmentManager());
 			vpPager.setAdapter(pagerAdapter);
-		} else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
+		} else {
+			leftFragment = new FileViewFragment();
+			rightFragment = new FileViewFragment();
 			getSupportFragmentManager().beginTransaction().replace(R.id.leftFragment, leftFragment).commit();
 			getSupportFragmentManager().beginTransaction().replace(R.id.rightFragment, rightFragment).commit();
 		}

@@ -34,10 +34,7 @@ public class FileViewFragment extends Fragment {
 
 	public static FileViewFragment newInstance(int page, String title) {
 		FileViewFragment fragmentFirst = new FileViewFragment();
-		Bundle args = new Bundle();
-		args.putInt("someInt", page);
-		args.putString("someTitle", title);
-		fragmentFirst.setArguments(args);
+
 		return fragmentFirst;
 	}
 
@@ -78,7 +75,7 @@ public class FileViewFragment extends Fragment {
 					copyBtn.setVisibility(View.GONE);
 
 					textAdvise.setVisibility(View.VISIBLE);
-					textAdvise.setText("Select Files or Directories ang tap 'Copy' on another screen");
+					textAdvise.setText(R.string.text_advise);
 
 
 					lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -116,7 +113,7 @@ public class FileViewFragment extends Fragment {
 			@Override
 			public void onClick(View view) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-				builder.setTitle("Title");
+				builder.setTitle(R.string.add_folder__dialog_title);
 
 
 				final EditText input = new EditText(getActivity());
@@ -125,7 +122,7 @@ public class FileViewFragment extends Fragment {
 				builder.setView(input);
 
 
-				builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				builder.setPositiveButton(R.string.add_folder__dialog_ok, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						newFolderName = input.getText().toString();
@@ -135,7 +132,7 @@ public class FileViewFragment extends Fragment {
 						fileViewer.fileItemGet(currentDirNew);
 					}
 				});
-				builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				builder.setNegativeButton(R.string.add_folder__dialog_cancel, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.cancel();
@@ -209,7 +206,7 @@ public class FileViewFragment extends Fragment {
 					}
 				} else {
 					Toast.makeText(getActivity().getApplicationContext(),
-							"It`s a file",
+							R.string.toast_on_file,
 							Toast.LENGTH_LONG).show();
 				}
 
