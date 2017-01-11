@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class AsyncTaskCopy extends AsyncTask<ArrayList<File>, Integer, Integer> {
+public class AsyncTaskDelete extends AsyncTask<ArrayList<File>, Integer, Integer> {
 	int progress = 0;
 
 	private static final String LOG_TAG = "myLog";
@@ -20,7 +20,7 @@ public class AsyncTaskCopy extends AsyncTask<ArrayList<File>, Integer, Integer> 
 
 	private Context context;
 
-	public AsyncTaskCopy(FileViewFragment f) {
+	public AsyncTaskDelete(FileViewFragment f) {
 		super();
 		this.container = f;
 	}
@@ -44,9 +44,9 @@ public class AsyncTaskCopy extends AsyncTask<ArrayList<File>, Integer, Integer> 
 			File src = file[0].get(n);
 			try {
 				if (src.isFile()) {
-					FileUtils.copyFileToDirectory(src, dst);
+					FileUtils.forceDelete(src);
 				} else {
-					FileUtils.copyDirectoryToDirectory(src, dst);
+					FileUtils.deleteDirectory(src);
 				}
 
 			} catch (IOException e) {

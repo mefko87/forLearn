@@ -7,75 +7,100 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark">
+        android:layout_height="match_parent">
 
         <Button
-            android:text="Parent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/parentPath"
-            />
-
-        <Button
-            android:text="Add Folder"
-            android:layout_height="wrap_content"
+            android:background="@drawable/roundedbutton"
             android:id="@+id/addFolder"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_width="wrap_content"/>
+            android:textSize="15dp"
+            android:text="+"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="30dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"/>
 
-        <Button
-            android:text="Current"
-            android:layout_height="wrap_content"
-            android:id="@+id/currentPath"
-            android:layout_width="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/parentPath"
-            />
-    </RelativeLayout>
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/lview"
-        android:layout_weight="1"/>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="55dp">
-
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:elevation="0dp"
-            android:background="@color/colorPrimary"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="match_parent">
 
-            <Button
-                android:text="copy"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/copyBtn"
-                android:layout_alignParentBottom="true"
-                android:textSize="18sp"/>
+                android:background="@color/colorPrimaryDark"
+                >
 
-            <TextView
-                android:text="TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_toEndOf="@+id/moveBtn"
-                android:layout_marginStart="33dp"
-                android:layout_marginBottom="9dp"
-                android:id="@+id/textAdvise"
-                android:visibility="gone"
-                android:textSize="18sp"
-                android:textColor="@color/white_opaque"
-                android:textAlignment="center"/>
+                <Button
+                    android:text="Parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/parentPath"
+                    android:maxLength="200"/>
 
-        </RelativeLayout>
-    </LinearLayout>
+                <Button
+                    android:text="Current"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/currentPath"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/parentPath"
+                    android:maxLength="150"/>
+
+            </RelativeLayout>
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/lview"
+                android:layout_weight="1"
+                />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:elevation="0dp"
+                android:layout_weight="6"
+                android:layout_alignParentBottom="true"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:elevation="0dp"
+                    android:background="@color/colorPrimary"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:text="copy"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/copyBtn"
+                        android:layout_alignParentBottom="true"
+                        android:textSize="18sp"
+                        android:layout_width="wrap_content"/>
+
+                    <Button
+                        android:text="Move"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/moveBtn"
+                        android:textSize="18sp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_toEndOf="@+id/copyBtn"/>
+
+                    <Button
+                        android:text="delete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/dltBtn"
+                        android:textSize="18sp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_toEndOf="@+id/moveBtn"/>
+
+                </RelativeLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </LinearLayout>

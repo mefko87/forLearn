@@ -1,5 +1,6 @@
 package com.example.alex.filemanager_git;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,14 +14,13 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
 
 
-public class FileViewFragment extends Fragment {
+public class FileViewFragment extends Fragment implements BecameVisibleFragmentInterface {
 
 
 	private static ArrayList<File> mActionFileList = new ArrayList<File>();
@@ -29,7 +29,14 @@ public class FileViewFragment extends Fragment {
 	private File currentDirNew;
 	private String newFolderName;
 	private File newFile;
-	AsyncTaskCopy asyncTaskCopy;
+	private AsyncTaskCopy asyncTaskCopy;
+	private AsyncTaskMove asyncTaskMove;
+	private AsyncTaskDelete asyncTaskDelete;
+	private ProgressDialog mProgressDialog;
+	private Button copyBtn;
+	private Button moveBtn;
+	private Button deleteBtn;
+
 
 
 	public static FileViewFragment newInstance(int page, String title) {
@@ -45,6 +52,13 @@ public class FileViewFragment extends Fragment {
 	}
 
 	@Override
+	public void onResume() {
+
+		super.onResume();
+
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_file, container, false);
@@ -53,59 +67,152 @@ public class FileViewFragment extends Fragment {
 		final String rootPath = "/storage";
 		final File startDir = new File(String.valueOf(Environment.getExternalStorageDirectory()));
 
-		asyncTaskCopy = new AsyncTaskCopy(this.getContext());
+		asyncTaskCopy = new AsyncTaskCopy(this);
+		asyncTaskMove = new AsyncTaskMove(this);
+		asyncTaskDelete = new AsyncTaskDelete(this);
 
 		final ListView lview = (ListView) view.findViewById(R.id.lview);
 		final Button curentDirectory = (Button) view.findViewById(R.id.currentPath);
 		final Button parentDirectory = (Button) view.findViewById(R.id.parentPath);
 		final Button addDirectory = (Button) view.findViewById(R.id.addFolder);
-		final Button copyBtn = (Button) view.findViewById(R.id.copyBtn);
-		final Button moveBtn = (Button) view.findViewById(R.id.moveBtn);
-		final TextView textAdvise = (TextView) view.findViewById(R.id.textAdvise);
+		copyBtn = (Button) view.findViewById(R.id.copyBtn);
+		moveBtn = (Button) view.findViewById(R.id.moveBtn);
+		deleteBtn = (Button) view.findViewById(R.id.dltBtn);
+
 
 		getmActionFileList().clear();
 
 
-		//Реалізація копіювання і виділення елементів для копіювання
+		fileViewer = new FileViewer();
+		fileAdapter = new FileAdapter(fileViewer.getmFList(), getActivity());
+		fileViewer.fileItemGet(startDir);
+		if (currentDirNew == null) {
+			currentDirNew = startDir;
+		}
+		lview.setAdapter(fileAdapter);
+		fileAdapter.notifyDataSetChanged();
+		parentDirectory.setText(startDir.getParentFile().getName());
+		curentDirectory.setText(startDir.getName());
+
+
+		//Реалізація копіювання
 		//
 		copyBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+
+
 				if (getmActionFileList().isEmpty()) {
-					copyBtn.setVisibility(View.GONE);
 
-					textAdvise.setVisibility(View.VISIBLE);
-					textAdvise.setText(R.string.text_advise);
+					Toast.makeText(getActivity().getApplicationContext(),
+							R.string.toast_check_if_list_is_empty_copy,
+							Toast.LENGTH_LONG).show();
 
+				} else {
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+					builder.setTitle(R.string.copy_to_alert);
 
-					lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+					builder.setMessage(currentDirNew.getName() + "  ?");
+
+					builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
 						@Override
-						public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-							File item = (File) fileAdapter.getItem(position);
-							if (getmActionFileList().contains(item)) {
-								getmActionFileList().remove(item);
-								fileAdapter.notifyDataSetChanged();
-							} else {
-								getmActionFileList().add(item);
-								fileAdapter.notifyDataSetChanged();
-							}
+						public void onClick(DialogInterface dialog, int which) {
+							getmActionFileList().add(currentDirNew);
+							asyncTaskCopy.execute(getmActionFileList());
 
 						}
 					});
-				} else {
-					getmActionFileList().add(currentDirNew);
-
-					asyncTaskCopy.execute(getmActionFileList());
-					copyBtn.setVisibility(View.VISIBLE);
-
-					textAdvise.setVisibility(View.GONE);
-
-
+					builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
+					builder.show();
 				}
 			}
 		});
-		// END // pеалізація копіювання і виділення елементів для копіювання
+		// END // pеалізація копіювання
 
+		//Реалізація переміщення
+		//
+
+		moveBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (getmActionFileList().isEmpty()) {
+
+					Toast.makeText(getActivity().getApplicationContext(),
+							R.string.toast_check_if_list_is_empty_move,
+							Toast.LENGTH_LONG).show();
+
+				} else {
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+					builder.setTitle(R.string.move_to_alert + currentDirNew.getName() + "?");
+					builder.setMessage(currentDirNew.getName() + "  ?");
+
+					builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							getmActionFileList().add(currentDirNew);
+							asyncTaskMove.execute(getmActionFileList());
+
+						}
+					});
+					builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
+					builder.show();
+				}
+
+			}
+		});
+		// END //Реалізація переміщення
+
+
+		//Реалізація видалення
+		//
+
+		deleteBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+
+				if (getmActionFileList().isEmpty()) {
+
+					Toast.makeText(getActivity().getApplicationContext(),
+							R.string.toast_check_if_list_is_empty_delete,
+							Toast.LENGTH_LONG).show();
+
+				} else {
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+					builder.setTitle(R.string.delete_alert);
+					builder.setMessage(currentDirNew.toString() + "  ?");
+
+					builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							getmActionFileList().add(currentDirNew);
+							asyncTaskDelete.execute(getmActionFileList());
+
+						}
+					});
+					builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
+					builder.show();
+				}
+
+
+			}
+		});
+
+		// END //Реалізація видалення
 
 		//Баттон створення директорії
 		//
@@ -122,7 +229,7 @@ public class FileViewFragment extends Fragment {
 				builder.setView(input);
 
 
-				builder.setPositiveButton(R.string.add_folder__dialog_ok, new DialogInterface.OnClickListener() {
+				builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						newFolderName = input.getText().toString();
@@ -132,7 +239,7 @@ public class FileViewFragment extends Fragment {
 						fileViewer.fileItemGet(currentDirNew);
 					}
 				});
-				builder.setNegativeButton(R.string.add_folder__dialog_cancel, new DialogInterface.OnClickListener() {
+				builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.cancel();
@@ -145,16 +252,6 @@ public class FileViewFragment extends Fragment {
 		});
 		// END // Баттон створення директорії
 
-		fileViewer = new FileViewer();
-		fileAdapter = new FileAdapter(fileViewer.getmFList(), getActivity());
-		fileViewer.fileItemGet(startDir);
-		if (currentDirNew == null) {
-			currentDirNew = startDir;
-		}
-		lview.setAdapter(fileAdapter);
-		fileAdapter.notifyDataSetChanged();
-		parentDirectory.setText(startDir.getParentFile().getName());
-		curentDirectory.setText(startDir.getName());
 
 		// 	Кнопка навігації назад
 		//
@@ -177,6 +274,28 @@ public class FileViewFragment extends Fragment {
 			}
 		});
 		//END // 	Кнопка навігації назад
+
+		//Реалізація вибору файлів для наступних дій з ними
+		//
+		lview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+				File item = (File) fileAdapter.getItem(position);
+				if (getmActionFileList().contains(item)) {
+					getmActionFileList().remove(item);
+					fileAdapter.notifyDataSetChanged();
+				} else {
+					getmActionFileList().add(item);
+					fileAdapter.notifyDataSetChanged();
+				}
+
+
+				return true;
+			}
+		});
+		//END // Реалізація вибору файлів для наступних дій з ними
+
 
 		//Реалізація перегляду файлової системи
 		//
@@ -223,5 +342,39 @@ public class FileViewFragment extends Fragment {
 		return mActionFileList;
 	}
 
+	public void showProgress() {
+		mProgressDialog = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
 
+		mProgressDialog.setIndeterminate(false);
+		mProgressDialog.show();
+	}
+
+	public void dissmisProgress() {
+
+		if (mProgressDialog != null) {
+			mProgressDialog.dismiss();
+		} else {
+			mProgressDialog = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
+			mProgressDialog.dismiss();
+		}
+
+	}
+
+	public void refreshAdapter() {
+		fileViewer.fileItemGet(currentDirNew);
+		fileAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void fragmentBecameVisible() {
+
+		copyBtn.setVisibility(View.VISIBLE);
+		moveBtn.setVisibility(View.VISIBLE);
+		deleteBtn.setVisibility(View.VISIBLE);
+
+
+		fileAdapter.notifyDataSetChanged();
+		fileViewer.fileItemGet(currentDirNew);
+
+	}
 }

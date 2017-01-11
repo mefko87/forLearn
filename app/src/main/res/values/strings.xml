@@ -1,8 +1,15 @@
 <resources>
     <string name="app_name">FileManager_git</string>
     <string name="toast_on_file">It`s a file</string>
-    <string name="text_advise">Select Files or Directories ang tap 'Copy' on another screen</string>
+    <string name="text_advise">Select Files or Directories ang tap \'Copy\' on another screen</string>
     <string name="add_folder__dialog_title">Folder name</string>
-    <string name="add_folder__dialog_ok">OK</string>
-    <string name="add_folder__dialog_cancel">Cancel</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="toast_check_if_list_is_empty_copy">Please select file(s) to copy </string>
+    <string name="toast_check_if_list_is_empty_move">Please select file(s) to move </string>
+    <string name="toast_check_if_list_is_empty_delete">Please select file(s) to delete </string>
+    <string name="copy_to_alert">Copy to </string>
+    <string name="move_to_alert">Move to </string>
+    <string name="delete_alert">Delete </string>
+
 </resources>
